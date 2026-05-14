@@ -1,4 +1,4 @@
-import { createCardElement } from "./components/card.js";
+import { createCardElement, deleteCard, isCardLiked, likeCard } from "./components/card.js";
 import { openModalWindow, closeModalWindow, setCloseModalWindowEventListeners } from "./components/modal.js";
 import { getUserInfo, getInitialCards, updateUserInfo, updateAvatar, addNewCard, deleteCardFromServer, likeCardOnServer, unlikeCardOnServer } from "./components/api.js";
 import { enableValidation, clearValidation } from "./components/validation.js";
@@ -152,7 +152,6 @@ function handleNewCardFormSubmit(evt) {
         })
       );
       closeModalWindow(newCardPopup);
-      newCardForm.reset();
     })
     .catch(console.error)
     .finally(() => { btn.textContent = "Создать"; });
@@ -160,20 +159,15 @@ function handleNewCardFormSubmit(evt) {
 
 function handleDeleteCard(cardEl, cardId) {
   deleteCardFromServer(cardId)
-    .then(() => cardEl.remove())
+    .then(() => deleteCard(cardEl))
     .catch(console.error);
 }
 
 function handleLikeCard(likeBtn, cardId) {
-  const liked = likeBtn.classList.contains("card__like-button_is-active");
-  const action = liked ? unlikeCardOnServer(cardId) : likeCardOnServer(cardId);
+  const action = isCardLiked(likeBtn) ? unlikeCardOnServer(cardId) : likeCardOnServer(cardId);
 
   action
-    .then((data) => {
-      likeBtn.classList.toggle("card__like-button_is-active");
-      const counter = likeBtn.closest(".card").querySelector(".card__like-count");
-      if (counter) counter.textContent = data.likes.length;
-    })
+    .then((data) => likeCard(likeBtn, data.likes))
     .catch(console.error);
 }
 

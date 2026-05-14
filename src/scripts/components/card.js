@@ -3,12 +3,18 @@ function getCardTemplate() {
   return template.content.querySelector(".card").cloneNode(true);
 }
 
-export function likeCard(likeButton) {
-  likeButton.classList.toggle("card__like-button_is-active");
-}
-
 export function deleteCard(cardElement) {
   cardElement.remove();
+}
+
+export function isCardLiked(likeBtn) {
+  return likeBtn.classList.contains("card__like-button_is-active");
+}
+
+export function likeCard(likeBtn, likes) {
+  likeBtn.classList.toggle("card__like-button_is-active");
+  const counter = likeBtn.closest(".card").querySelector(".card__like-count");
+  if (counter) counter.textContent = likes.length;
 }
 
 export function createCardElement(data, userId, handlers) {
